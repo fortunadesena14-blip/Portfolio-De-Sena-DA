@@ -1,43 +1,47 @@
-# Portfolio Data Analytics — De Sena
+# Social Media & Wellbeing Dashboard
 
-Raccolta di progetti di analisi dati realizzati con Python, Power BI, Looker Studio e SQL. Ogni progetto include, quando disponibile, il file sorgente e un'esportazione o un'anteprima del risultato.
+An interactive Power BI dashboard exploring how digital habits relate to psychological wellbeing, built on a synthetic survey dataset of 6,827 respondents. Designed as a companion piece to a parallel Python/scikit-learn analysis (EDA + leakage-aware machine learning) of the same data.
 
-## Progetti
+## The dataset
 
-### Python — analisi dei dati COVID-19
+6,827 synthetic survey responses covering:
+- **Demographics**: age, age group, gender, occupation, region
+- **Digital behavior**: screen time, platform used, daily notifications, time to first check after waking, night-time use, primary purpose of use, screen time limits, digital detox attempts
+- **Psychological scores**: anxiety, low mood, life satisfaction, loneliness, self-esteem, FOMO, social comparison
+- **Target variable**: `wellbeing_band` (Good / Moderate / At-risk) — a composite label derived from the psychological scores
 
-Notebook d'esame con esplorazione e analisi del dataset pubblico Our World in Data.
+## Dashboard structure
 
-- [Apri il notebook Python](PYTHON_finalexam.ipynb)
-- [Dataset Our World in Data](https://github.com/owid/covid-19-data)
+Three pages, each with a clear focus — *who the respondents are → what they do online → how they feel, and why*:
 
-Il notebook legge i dati dalla fonte online. Per eseguirlo servono Python e le librerie usate nel notebook (tra cui pandas, matplotlib e seaborn).
+### 1. Overview
+Who the sample is made up of. KPIs (total respondents, % Good / Moderate / At-risk), where respondents are from, most used platforms, and wellbeing distribution by age group.
 
-### Power BI — analisi Olist
+### 2. Digital Behaviour
+What people actually do online. KPIs on average screen time, notifications, morning check time, and sleep. Breakdown of usage purpose by age group, screen time limits and digital detox attempts, and a scatter plot of daily notifications vs. screen hours, colored by wellbeing band.
 
-Il file `BUSINESSANALYSIS_OLIST.pbix` presente ora nella repository è incompleto e non è apribile come report Power BI. Carica qui il file PBIX corretto quando è pronto.
+### 3. Psychological Wellness
+How people feel, and how it connects to behavior. KPIs on life satisfaction, anxiety, and FOMO; an **interactive boxplot** (pick a psychological score from the dropdown — Anxiety, Low Mood, Life Satisfaction, Loneliness, or Self-Esteem — and compare its distribution across wellbeing bands); and a breakdown of who seeks mental health support, by wellbeing band.
 
-### Airbnb
+## The story
 
-- [Modello Power BI](airbnb_dashboard.pbit)
-- [Esportazione PDF della dashboard](airbnb_dashboard.pdf)
+**The expected pattern holds — and the data backs it up quantitatively.** A Random Forest model trained separately in Python (see the companion notebook) confirms what the scatter plot on page 2 suggests visually: `daily_screen_hours`, `daily_notifications`, and `avg_sleep_hours` alone account for roughly 63% of the model's predictive importance for wellbeing. Behavior, not demographics or platform choice, is what drives the signal.
 
-Il file `.pbit` è un modello Power BI: aprendolo con Power BI Desktop potrebbe essere necessario specificare nuovamente la posizione dei dati.
+**The pattern that doesn't show up in raw numbers.** Seniors are the smallest group in the sample by far (just 119 out of 6,827 respondents), and in a chart of raw counts they barely register. But looked at proportionally, Seniors have the *highest* at-risk rate of any age group — 18.5%, compared to 12–14% for every other group. It's an insight that only surfaces once you stop looking at headcounts and start looking at rates within each group.
 
-### Sanremo — dashboard Looker Studio
+**A quieter story about help-seeking.** 61% of respondents say they do not seek mental health support, and a further 21% say they're only considering it — regardless of which wellbeing band they fall into. This dashboard doesn't attempt to explain *why* (stigma, access, awareness are all plausible, untestable with this data), but it's a pattern worth sitting with rather than glossing over.
 
-- [Esportazione PDF](SANREMO_DASHBOARD_LOOKER.pdf)
+## Methodology note
 
-### SQL
+`wellbeing_band` is very likely a composite constructed from the five psychological scores themselves — the boxplots in this dashboard confirm it, with near-complete separation between bands on each score. For that reason, the companion Python analysis deliberately **excludes** those psychological scores when training predictive models, keeping only behavioral and demographic variables. The "what drives wellbeing" insight above comes from that leakage-free ("honest") model, not from a model that could trivially decode the label from its own ingredients.
 
-- [Materiale del progetto SQL](sql_analysiszip)
+The dataset is synthetic. The patterns here demonstrate a workflow — EDA, dashboard design, leakage-aware modeling — rather than real-world claims about social media and mental health.
 
-## Dati e privacy
+## Tools
 
-Prima di pubblicare file o dataset, verifica di avere il diritto di condividerli. Non caricare dati personali, riservati o credenziali. Per gli esempi usa dati pubblici, fittizi o adeguatamente anonimizzati.
+- **Power BI**: data modeling, DAX measures, field-parameter-driven interactive boxplot
+- **Python** (pandas, scikit-learn): EDA, preprocessing, Logistic Regression / Random Forest comparison, permutation importance
 
-## Come aprire i file
+## Author
 
-- **Notebook `.ipynb`**: GitHub ne mostra il contenuto; per eseguirlo usa Jupyter Notebook, JupyterLab o un ambiente compatibile.
-- **File Power BI `.pbix` e `.pbit`**: usa Power BI Desktop.
-- **PDF**: aprilo direttamente dal link del progetto.
+Fortuna
